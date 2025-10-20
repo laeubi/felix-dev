@@ -64,14 +64,14 @@ public <T> boolean enterCreate(final ServiceReference<T> serviceReference,
 }
 ```
 
-**Pros:**
+**Cons:**
 - Minimal code change
 - Provides better diagnostics
 - Helps users understand the issue
 
 **Cons:**
 - Doesn't fix false positives
-- Still blocks activation even for resolvable cycles
+- Still prevents activation of components in cycles, even those that could potentially be resolved with correct activation order
 
 ### Strategy 2: Dependency Context Tracking (Moderate Impact)
 **Goal:** Track dependency metadata in the circular detection stack
@@ -103,9 +103,14 @@ public <T> boolean enterCreate(final ServiceReference<T> serviceReference,
             if (hasOptionalLinkInCycle(info, serviceReference))
             {
                 // Cycle can be broken by optional dependency
+                // Return true to indicate cycle detected, but allow retry via
+                // missingServicePresent() mechanism
                 m_logger.log(Level.DEBUG, 
                     "Resolvable circular dependency detected...");
-                return false; // Allow activation
+                // Note: This would require refactoring the return semantics
+                // to distinguish between "block" and "defer" activation
+                return false; // Current behavior: false = no cycle detected
+                             // Proposed: introduce separate return type
             }
             else
             {
