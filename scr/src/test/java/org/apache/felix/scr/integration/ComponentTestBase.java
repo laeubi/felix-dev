@@ -164,6 +164,7 @@ public abstract class ComponentTestBase
                         + "org.apache.felix.scr.integration.components.felix4984,"
                         + "org.apache.felix.scr.integration.components.felix5248,"
                         + "org.apache.felix.scr.integration.components.felix5276,"
+                        + "org.apache.felix.scr.integration.components.felix6724,"
                         + "org.apache.felix.scr.integration.components.felix6726,"
                         + "org.apache.felix.scr.integration.components.metadata.cache" );
         builder.setHeader( "Import-Package", "org.apache.felix.scr.component" );
