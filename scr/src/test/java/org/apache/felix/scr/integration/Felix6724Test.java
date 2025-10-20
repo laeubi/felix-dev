@@ -213,4 +213,53 @@ public class Felix6724Test extends ComponentTestBase
         // Clean up
         bundleContext.ungetService(serviceReferenceA);
     }
+
+    /**
+     * Scenario 4: Static binding policy with optional dependency
+     * A -> B (1..1 static) -> C (1..1 static) -> A (0..1 static)
+     * 
+     * Expected: All components should activate successfully even with static binding.
+     * 
+     * This tests whether the binding policy affects circular dependency detection
+     * when optional dependencies are involved.
+     */
+    @Test
+    public void test_scenario4_static_binding_with_optional_dependency() throws Exception
+    {
+        String componentNameA = "felix6724.scenario4.A";
+        String componentNameB = "felix6724.scenario4.B";
+        String componentNameC = "felix6724.scenario4.C";
+        
+        // Enable all three components
+        enableAndCheck(findComponentDescriptorByName(componentNameA));
+        enableAndCheck(findComponentDescriptorByName(componentNameB));
+        enableAndCheck(findComponentDescriptorByName(componentNameC));
+        
+        delay();
+        
+        // All components should be active
+        ComponentConfigurationDTO componentA = findComponentConfigurationByName(
+            componentNameA, ComponentConfigurationDTO.ACTIVE);
+        ComponentConfigurationDTO componentB = findComponentConfigurationByName(
+            componentNameB, ComponentConfigurationDTO.ACTIVE);
+        ComponentConfigurationDTO componentC = findComponentConfigurationByName(
+            componentNameC, ComponentConfigurationDTO.ACTIVE);
+        
+        // Verify the services are available
+        ServiceA serviceA = getServiceFromConfiguration(componentA, ServiceA.class);
+        ServiceB serviceB = getServiceFromConfiguration(componentB, ServiceB.class);
+        ServiceC serviceC = getServiceFromConfiguration(componentC, ServiceC.class);
+        
+        assertNotNull("ServiceA should be available", serviceA);
+        assertNotNull("ServiceB should be available", serviceB);
+        assertNotNull("ServiceC should be available", serviceC);
+        
+        // Verify dependencies are satisfied
+        assertEquals("ServiceA should have 1 ServiceB reference", 1, serviceA.getBServices().size());
+        assertEquals("ServiceB should have 1 ServiceC reference", 1, serviceB.getCServices().size());
+        
+        // C should have A bound (optional but static binding means it should bind at activation)
+        assertEquals("ServiceC should have 0 or 1 ServiceA references", 
+            1, serviceC.getAServices().size());
+    }
 }

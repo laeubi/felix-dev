@@ -202,4 +202,67 @@
         <property name="service.pid" value="felix6724.scenario3.C" />
     </scr:component>
 
+    <!-- Scenario 4: Static binding policy with optional dependency
+         A -> B (1..1 static) -> C (1..1 static) -> A (0..1 static)
+         Test if static binding affects circular dependency detection -->
+    <scr:component name="felix6724.scenario4.A"
+        enabled="false"
+        immediate="true"
+        configuration-policy="ignore">
+        <implementation class="org.apache.felix.scr.integration.components.felix6724.ServiceA" />
+        <service>
+            <provide interface="org.apache.felix.scr.integration.components.felix6724.ServiceA" />
+        </service>
+        <reference
+            name="serviceB"
+            interface="org.apache.felix.scr.integration.components.felix6724.ServiceB"
+            cardinality="1..1"
+            policy="static"
+            bind="setServiceB"
+            unbind="unsetServiceB"
+            target="(service.pid=felix6724.scenario4.B)"
+        />
+        <property name="service.pid" value="felix6724.scenario4.A" />
+    </scr:component>
+    
+    <scr:component name="felix6724.scenario4.B"
+        enabled="false"
+        immediate="true"
+        configuration-policy="ignore">
+        <implementation class="org.apache.felix.scr.integration.components.felix6724.ServiceB" />
+        <service>
+            <provide interface="org.apache.felix.scr.integration.components.felix6724.ServiceB" />
+        </service>
+        <reference
+            name="serviceC"
+            interface="org.apache.felix.scr.integration.components.felix6724.ServiceC"
+            cardinality="1..1"
+            policy="static"
+            bind="setServiceC"
+            unbind="unsetServiceC"
+            target="(service.pid=felix6724.scenario4.C)"
+        />
+        <property name="service.pid" value="felix6724.scenario4.B" />
+    </scr:component>
+    
+    <scr:component name="felix6724.scenario4.C"
+        enabled="false"
+        immediate="true"
+        configuration-policy="ignore">
+        <implementation class="org.apache.felix.scr.integration.components.felix6724.ServiceC" />
+        <service>
+            <provide interface="org.apache.felix.scr.integration.components.felix6724.ServiceC" />
+        </service>
+        <reference
+            name="serviceA"
+            interface="org.apache.felix.scr.integration.components.felix6724.ServiceA"
+            cardinality="0..1"
+            policy="static"
+            bind="setServiceA"
+            unbind="unsetServiceA"
+            target="(service.pid=felix6724.scenario4.A)"
+        />
+        <property name="service.pid" value="felix6724.scenario4.C" />
+    </scr:component>
+
 </components>
