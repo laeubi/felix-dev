@@ -161,6 +161,72 @@ For more details, see:
 - [OSGi Issue #720](https://github.com/osgi/osgi/issues/720)
 - [OSGi PR #875](https://github.com/osgi/osgi/pull/875)
 
+## Retention Policy (OSGi R8)
+
+Apache Felix SCR implements the Retention Policy feature as specified in the preliminary OSGi R8 Declarative Services specification. This feature allows control over whether component instances are retained when their use count drops to zero.
+
+**Note:** This feature is based on the preliminary OSGi R8 specification changes ([PR #875](https://github.com/osgi/osgi/pull/875), [Issue #720](https://github.com/osgi/osgi/issues/720)) and may be subject to changes before the final R8 specification is released.
+
+### Problem Statement
+
+Components that are expensive to activate/deactivate or that maintain caches have limited control over their lifecycle when the service use count drops to zero. They either:
+- Stay permanently active with `immediate="true"`
+- Get deactivated on every idle period with `immediate="false"` (default for delayed components)
+
+The retention policy feature solves this by allowing components to specify whether they should be retained even when not in use.
+
+### Using Retention Policy
+
+The `retention-policy` element can have two values:
+
+- **`retain`**: Keep the component instance active even when use count is zero. The component will not be deactivated until explicitly disabled or when dependencies become unsatisfied.
+- **`discard`** (default): Dispose of the component instance when use count drops to zero (standard DS behavior).
+
+#### Example with `retain`:
+
+```xml
+<scr:component name="expensive.cache.component" xmlns:scr="http://www.osgi.org/xmlns/scr/v1.5.0">
+    <implementation class="com.example.ExpensiveCacheComponent"/>
+    <retention-policy>retain</retention-policy>
+</scr:component>
+```
+
+#### Example with `discard`:
+
+```xml
+<scr:component name="disposable.component" xmlns:scr="http://www.osgi.org/xmlns/scr/v1.5.0">
+    <implementation class="com.example.DisposableComponent"/>
+    <retention-policy>discard</retention-policy>
+</scr:component>
+```
+
+### Use Cases
+
+Retention policy is particularly useful for:
+- Components with expensive initialization (e.g., loading large datasets, establishing connections)
+- Components that maintain caches that should persist across service usage periods
+- Event handler services that are frequently used but have idle periods
+- Components that provide utility services that are accessed sporadically
+
+### Compatibility Note
+
+The retention policy feature maps to the existing Felix-specific `delayedKeepInstances` extension. Components using the Felix extension attribute will continue to work:
+
+```xml
+<scr:component name="my.component" 
+               xmlns:scr="http://www.osgi.org/xmlns/scr/v1.5.0"
+               xmlns:felix="http://felix.apache.org/xmlns/scr/extensions/v1.0.0"
+               felix:delayedKeepInstances="true">
+    <implementation class="com.example.MyComponent"/>
+</scr:component>
+```
+
+The standard `retention-policy` element should be preferred in new component descriptors for better portability across DS implementations.
+
+For more details, see:
+- [OSGi Issue #720](https://github.com/osgi/osgi/issues/720)
+- [OSGi PR #875](https://github.com/osgi/osgi/pull/875)
+
 ## Apache Maven Support
 
 Both, the [maven-bundle-plugin](http://felix.apache.org/documentation/subprojects/apache-felix-maven-bundle-plugin-bnd.html) as well as the [bnd-maven-plugin](https://github.com/bndtools/bnd/tree/master/maven) supports processing the annotations and creating the XML component descriptors.
