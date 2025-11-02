@@ -1,3 +1,13 @@
+Changes in 2.2.15
+-----------------
+** Improvement
+    * Document Satisfying Condition feature as OSGi R8 specification-compliant
+      - The existing satisfying condition implementation is now documented as compliant 
+        with the preliminary OSGi R8 Declarative Services specification changes
+      - See https://github.com/osgi/osgi/pull/875 and https://github.com/osgi/osgi/issues/720
+      - Added comprehensive documentation in README.md
+      - Updated code comments to reflect specification compliance
+
 Changes in 2.2.14
 -----------------
 ** PRs
