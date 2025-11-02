@@ -4,7 +4,7 @@ The Apache Felix Service Component Runtime described by the [OSGi Declarative Se
 
 The Java annotations defined by the specification make implementing components easy and reduce the amount of code that needs be written. These annotations are processed at build time and translated into XML descriptor files which in turn are listed in the `Service-Component` header of the declaring bundle. But the good news is, you usually don't have to worry about this XML, however in case things don't work as expected , it's good to know how these things work.
 
-The Apache Felix Declarative Services implementation is the reference implementation for the OSGi Declarative Services Specification Version 1.4 (R7) and therefore passes the OSGi CT. This implementation also includes support for preliminary OSGi R8 features including the Satisfying Condition specification.
+The Apache Felix Declarative Services implementation is the reference implementation for the OSGi Declarative Services Specification Version 1.4 (R7) and therefore passes the OSGi CT. This implementation also includes support for OSGi R8 features such as the Satisfying Condition specification (preliminary).
 
 ## Example Usage
 
@@ -114,7 +114,9 @@ public Comparator(@Reference LogService logService)
 
 ## Satisfying Condition (OSGi R8)
 
-Apache Felix SCR implements the Satisfying Condition feature as specified in the OSGi R8 Declarative Services specification. This feature allows components to be activated only when specific runtime conditions are met.
+Apache Felix SCR implements the Satisfying Condition feature as specified in the preliminary OSGi R8 Declarative Services specification. This feature allows components to be activated only when specific runtime conditions are met.
+
+**Note:** This feature is based on the preliminary OSGi R8 specification changes ([PR #875](https://github.com/osgi/osgi/pull/875), [Issue #720](https://github.com/osgi/osgi/issues/720)) and may be subject to changes before the final R8 specification is released.
 
 ### How It Works
 
